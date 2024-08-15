@@ -1,4 +1,4 @@
-- Definimos los tipos de datos necesarios
+- Definimos todos los tipos de datos necesarios
 data Viajero = Viajero {
 nombre :: String,
 edad :: Int,
