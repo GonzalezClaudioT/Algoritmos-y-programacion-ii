@@ -1,0 +1,72 @@
+- Definimos los tipos de datos necesarios
+data Viajero = Viajero {
+nombre :: String,
+edad :: Int,
+recuerdos :: [Recuerdo],
+viajes :: [Viaje]
+}
+
+data Recuerdo = Recuerdo {
+nombreRecuerdo :: String,
+lugarRecuerdo :: String
+}
+
+data Viaje = Viaje {
+destino :: String,
+transformaciones :: [String],
+esFuturo :: Bool,
+recuerdosFuturos :: [Recuerdo],
+anosLuz :: Int,
+año :: Int
+}
+
+-- Funciones para obtener información de un viajero, un viaje y un recuerdo
+obtenerNombreViajero :: Viajero -> String
+obtenerNombreViajero = nombre
+
+obtenerNombreViaje :: Viaje -> String
+obtenerNombreViaje = destino
+
+obtenerInfoRecuerdo :: Recuerdo -> (String, String)
+obtenerInfoRecuerdo recuerdo = (nombreRecuerdo recuerdo, lugarRecuerdo recuerdo)
+
+-- Función para obtener los recuerdos y viajes de un viajero
+obtenerRecuerdosViajes :: Viajero -> ([Recuerdo], [Viaje])
+obtenerRecuerdosViajes viajero = (recuerdos viajero, viajes viajero)
+
+-- Función para determinar si un viaje es interesante
+esInteresante :: Viaje -> Bool
+esInteresante viaje =
+destino viaje == "lejano oeste" ||
+(esFuturo viaje && length (recuerdosFuturos viaje) > 5) ||
+not (esFuturo viaje)
+
+-- Función para obtener los nombres y años de los viajes interesantes
+obtenerViajesInteresantes :: [Viaje] -> [(String, Int)]
+obtenerViajesInteresantes viajes = [(destino viaje, año viaje) | viaje <- viajes, esInteresante viaje]
+
+-- Función para obtener los nombres y años de los viajes entre dos años
+obtenerViajesEntreAnos :: [Viaje] -> Int -> Int -> [(String, Int)]
+obtenerViajesEntreAnos viajes añoInicio añoFin = [(destino viaje, año viaje) | viaje <- viajes, año viaje >= añoInicio && año viaje <= añoFin]
+
+-- Función para aplicar las transformaciones de un viaje a un viajero
+aplicarTransformaciones :: Viajero -> Viaje -> Viajero
+aplicarTransformaciones viajero viaje =
+viajero {
+recuerdos = [recuerdo | recuerdo <- recuerdos viajero, nombreRecuerdo recuerdo `notElem` transformaciones viaje],
+viajes = viajes viajero ++ [viaje]
+}
+
+-- Función estadística para resolver consultas
+estadistica :: (a -> Bool) -> (a -> b) -> [a] -> [b]
+estadistica condicion transformacion lista = [transformacion elemento | elemento <- lista, condicion elemento]
+
+-- Consultas utilizando la función estadística
+obtenerNombresViajesConMasDe3Transformaciones :: [Viaje] -> [String]
+obtenerNombresViajesConMasDe3Transformaciones = estadistica (\viaje -> length (transformaciones viaje) > 3) destino
+
+obtenerSumaAnosLuz :: [Viaje] -> Int
+obtenerSumaAnosLuz = sum . estadistica esFuturo anosLuz
+
+obtenerNombresViajes :: [Viaje] -> [String]
+obtenerNombresViajes = estadistica (const True) destino
