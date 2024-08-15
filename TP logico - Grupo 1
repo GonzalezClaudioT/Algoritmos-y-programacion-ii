@@ -1,0 +1,37 @@
+%1.
+estandarRacial(Beagle, Altura, Peso) :-
+(Altura >= 33, Altura =< 40).
+estandarRacial(Cocker, Altura, Peso) :-
+((Genero = hembra, Altura >= 38, Altura =< 39);
+(Genero = macho, Altura >= 39, Altura =< 41)),
+Peso >= 13,
+Peso =< 15.
+
+%2.
+caracteristica(Perro, Caracteristica) :-
+perro(Duenio, Perro, Caracteristicas),
+member(Caracteristica, Caracteristicas).
+caracteristica(Humano, Caracteristica) :-
+humano(Humano, Caracteristicas),
+member(Caracteristica, Caracteristicas).
+
+%3.
+puedeEstarEnfermo(Perro) :-
++ perro(lucia, Perro, _),
++ estandarRacial(Perro).
+
+%4.
+sePareceASuDuenio(Perro, Duenio) :-
+perro(Duenio, Perro, CaracteristicasPerro),
+humano(Duenio, CaracteristicasDuenio),
+subset(CaracteristicasDuenio, CaracteristicasPerro).
+
+%5.
+puedeGanar(Duenio) :-
+findall(Perro, (perro(Duenio, Perro, _), estandarRacial(Perro)), Perros),
+length(Perros, N),
+N >= 2.
+
+%6.
+razaCumplePeso(Raza, PesoMin, PesoMax) :-
+forall(perro(_, Raza, _), (perro(_, Raza, Peso), Peso >= PesoMin, Peso =< PesoMax)).
